@@ -32,7 +32,7 @@ https://www.speedtest.net/apps/cli
 ### lldpd reqs:
 
 - sudo apt-get install lldpd
-- wlanpi user needs to be able to run lldpcli without password, one option is to add the following line to the end of /etc/sudoers (sudo visudo):
+- wlanpi user needs to be able to run `sudo lldpcli show neighbors -f json` without password, one option is to add the following line to the end of /etc/sudoers (sudo visudo):
 
 ```
 wlanpi ALL=NOPASSWD:/usr/sbin/lldpcli
@@ -61,6 +61,11 @@ python3 -m pip install -r requirements.txt
 ```
 cd {repo}/webstack/backend/app
 ./scripts/run.sh
+```
+
+`run.sh` runs the following for development:
+
+```
 uvicorn app.main:app --reload --env-file ../../.env 
 ```
 
@@ -78,7 +83,7 @@ Alternative automatic documentation with ReDoc (from the OpenAPI backend): http:
 
 ## backend local development, additional details
 
-before commiting changes:
+before committing changes:
 
 - for consistent styling please lint using lint.sh:
 - `(venv) [~/webstack/webstack/backend/app]: ./scripts/lint.sh`

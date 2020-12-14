@@ -8,7 +8,7 @@ from .helpers import run
 router = APIRouter()
 
 
-@router.post("/show_system_summary")
+@router.get("/show_system_summary")
 async def show_system_summary():
     """
     Returns device status information:
