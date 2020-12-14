@@ -1,0 +1,5 @@
+default_context:
+  project_name: webstack
+  project_slug: backend and frontend for the WLAN Pi
+  _copy_without_render: [frontend/src/**/*.html, frontend/src/**/*.vue, frontend/node_modules/*, backend/app/app/email-templates/**]
+  _template: ./
