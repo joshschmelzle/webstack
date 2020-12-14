@@ -2,4 +2,4 @@
 
 Webstack is a full stack backend (and future interactive frontend) using Python for the WLAN Pi, including interactive API documentation.
 
-[![API docs](img/docs.png)]
+![API docs](img/docs.png)
