@@ -1,4 +1,3 @@
-import json
 import socket
 
 from fastapi import APIRouter
@@ -26,7 +25,7 @@ async def show_system_summary():
         None
 
     Returns:
-        [JSON string with system device status values returned]
+        [dict with system device status values returned]
     """
 
     # figure out our IP
@@ -80,4 +79,4 @@ async def show_system_summary():
         "temp": temp,
     }
 
-    return json.dumps(result)
+    return result
