@@ -45,6 +45,12 @@ wlanpi ALL=NOPASSWD:/usr/sbin/lldpcli
 
 ## backend local development
 
+- Install dependencies:
+
+```
+apt install pkg-config dbus build-essential libdbus-glib-1-dev speedtest-cli lldpd gcc python3-dev
+```
+
 - Create venv and install dependencies (subject to change).
 
 ```
