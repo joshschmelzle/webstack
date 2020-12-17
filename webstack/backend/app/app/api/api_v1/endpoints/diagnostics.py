@@ -24,6 +24,14 @@ For example, assuming the user can reach the WLAN Pi-
 - Is tcpdump installed?
 - Does it need sudo to run?
 
+For diagnostics endpoints include a HTTP status code, if problem, return "false", and "error" with message.
+
+2xx: good
+4xx: bad - client’s fault (like providing a name for an non-existing interface)
+5xx: bad - server’s fault (like not having tcpdump properly installed)
+
+Example:
+{“success”: true, “response”: [{“name”: “wlan0"}, {“name”: “wlan1"}]}, { “success”: false, “error”: { “code”: 1001, “message”: “interface not found”}
 """
 
 
