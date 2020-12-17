@@ -1,3 +1,5 @@
+import json
+
 from fastapi import APIRouter
 
 from .helpers import run
@@ -63,6 +65,6 @@ async def retrieve_public_ip_information():
 
     request = urllib.request.Request(url, None, headers)
     response = urllib.request.urlopen(request)
-    data = response.read()
+    data = json.loads(response.read())
 
-    return data
+    return json.dumps(data)
