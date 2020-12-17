@@ -1,6 +1,10 @@
+import fcntl
 import json
 import os
+import socket
+import struct
 from shutil import which
+from typing import Optional
 
 from fastapi import APIRouter, HTTPException
 
@@ -30,27 +34,43 @@ def is_tool(name: str):
     return which(name) is not None
 
 
-@router.get("/")
-async def diagnostics(interface: str):
-    """
-    Return diagnostic tests for WLAN sensors
-    """
-    if not os.path.isdir(f"/sys/class/net/{interface}/"):
-        raise HTTPException(status_code=404, detail=f"{interface} not found")
+async def get_wifi_interfaces():
+    interfaces = []
+    path = "/sys/class/net"
+    for net, ifaces, files in os.walk(path):
+        for iface in ifaces:
+            for dirpath, dirnames, filenames in os.walk(os.path.join(path, iface)):
+                if "phy80211" in dirnames:
+                    interfaces.append(iface)
+    return interfaces
 
-    diag = {}
 
-    regdomain = await run("iw reg get")
+async def get_ip_address(ifname):
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    try:
+        return socket.inet_ntoa(
+            fcntl.ioctl(
+                s.fileno(),
+                0x8915,  # SIOCGIFADDR
+                struct.pack("256s", bytes(ifname[:15], "utf-8")),
+            )[20:24]
+        )
+    except OSError:
+        return None
 
-    diag["regdomain"] = [line for line in regdomain.split("\n") if "country" in line]
 
-    diag["driver"] = (
-        await run(f"readlink -f /sys/class/net/{interface}/device/driver")
-    ).strip()
+async def test_wifi_interface(interface: str) -> dict:
+    test = {}
 
-    diag["mac"] = (await run(f"cat /sys/class/net/{interface}/address")).strip()
+    test["mac"] = (await run(f"cat /sys/class/net/{interface}/address")).strip()
 
-    diag["tcpdump"] = is_tool("tcpdump")
+    test["local_ip"] = await get_ip_address(interface)
+
+    test["driver"] = (
+        (await run(f"readlink -f /sys/class/net/{interface}/device/driver"))
+        .strip()
+        .rsplit("/", 1)[1]
+    )
 
     """
 https://www.kernel.org/doc/Documentation/ABI/testing/sysfs-class-net
@@ -68,22 +88,55 @@ Description:
 		"dormant", "up".
     """
     operstate = await run(f"cat /sys/class/net/{interface}/operstate")
-    diag["operstate"] = operstate.strip()
+    test["operstate"] = operstate.strip()
 
     _type = await run(f"cat /sys/class/net/{interface}/type")
 
     _type = int(_type)
     if _type == 1:
-        diag["mode"] = "managed"
+        test["mode"] = "managed"
     elif _type == 801:
-        diag["mode"] = "monitor"
+        test["mode"] = "monitor"
     elif _type == 802:
-        diag["mode"] = "monitor"
+        test["mode"] = "monitor"
     elif (
         _type == 803
     ):  # https://elixir.bootlin.com/linux/latest/source/include/uapi/linux/if_arp.h#L90
-        diag["mode"] = "monitor"
+        test["mode"] = "monitor"
     else:
-        diag["mode"] = "unknown"
+        test["mode"] = "unknown"
+
+    return test
+
+
+@router.get("/interfaces")
+async def diagnostics(interface: Optional[str] = None):
+    interfaces = await get_wifi_interfaces()
+    if interface:
+        if interface not in interfaces:
+            raise HTTPException(status_code=404, detail=f"{interface} not found")
+        return json.dumps(await test_wifi_interface(interface))
+    else:
+        combined = []
+        for interface in interfaces:
+            combined.append(await test_wifi_interface(interface))
+        return json.dumps(combined)
+
+
+@router.get("/")
+async def diagnostics():
+    """
+    Return diagnostic tests for probe
+    """
+    diag = {}
+
+    regdomain = await run("iw reg get")
+
+    diag["regdomain"] = [line for line in regdomain.split("\n") if "country" in line]
+    diag["tcpdump"] = is_tool("tcpdump")
+    diag["iw"] = is_tool("iw")
+    diag["ip"] = is_tool("ip")
+    diag["ifconfig"] = is_tool("ifconfig")
+    diag["airmon-ng"] = is_tool("airmon-ng")
 
     return json.dumps(diag)
