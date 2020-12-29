@@ -1,7 +1,7 @@
-# Webstack Base Project for the WLAN Pi
+# WARNING: ALPHA / DEVELOPMENT
 
-(ALPHA NOT PRODUCTION)
+# THIS IS EXPLORATORY AT THE MOMENT.
 
-Webstack is a full stack backend (and future interactive frontend) using Python for the WLAN Pi, including interactive API documentation.
+# Local Web Application Base Project for the WLAN Pi
 
-![API docs](img/docs.png)
+Webstack is intended to be a full stack application with both a backend and future interactive frontend for the WLAN Pi.
