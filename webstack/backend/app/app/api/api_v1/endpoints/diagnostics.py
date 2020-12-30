@@ -4,7 +4,7 @@ import os
 import socket
 import struct
 from shutil import which
-from typing import Optional
+from typing import List, Optional
 
 from fastapi import APIRouter, HTTPException
 
@@ -42,7 +42,7 @@ def is_tool(name: str):
     return which(name) is not None
 
 
-async def get_wifi_interfaces():
+async def get_wifi_interfaces() -> List:
     interfaces = []
     path = "/sys/class/net"
     for net, ifaces, files in os.walk(path):
