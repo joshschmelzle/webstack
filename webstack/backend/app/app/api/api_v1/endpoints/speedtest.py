@@ -1,6 +1,7 @@
 import json
 
 from fastapi import APIRouter
+from fastapi.responses import JSONResponse
 
 from .helpers import run
 
@@ -12,9 +13,9 @@ async def ookla_speedtest():
     """
     Run `speedtest-cli --json` and return results
     """
-    results = json.dumps(json.loads(await run("speedtest-cli --json")))
+    results = json.loads(await run("speedtest-cli --json"))
 
     if "[stderr]" not in results:
-        return results
+        return JSONResponse(content=results,status_code=200)
     else:
-        results = "Problem running speedtest-cli --json"
+        return JSONResponse(content={"error": "ERROR: Problem running speedtest-cli --json"}, status_code=503)
