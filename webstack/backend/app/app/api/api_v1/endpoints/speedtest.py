@@ -9,7 +9,7 @@ router = APIRouter()
 
 
 @router.get("/")
-async def ookla_speedtest():
+async def speedtest():
     """
     Run `speedtest-cli --json` and return results
     """
