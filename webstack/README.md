@@ -2,14 +2,26 @@
 
 ## backend requirements
 
-### linting
+apt installs:
 
-- python3 -m pip install autoflake, black, flake8, isort, mypy
+first:
 
-### dbus
+```
+sudo apt-get install gcc libpq-dev -y
+sudo apt-get install python-dev  python-pip -y
+sudo apt-get install python3-dev python3-pip python3-venv python3-wheel -y
+pip3 install wheel
+```
 
-- dbus: make sure `dbus-python` installed. requires `apt install libdbus-glib-1-dev`
-- requires: `sudo apt-get install gcc python3-dev`
+then:
+
+```
+sudo apt install pkg-config dbus build-essential git libdbus-glib-1-dev speedtest-cli lldpd
+```
+
+### linting and formatting
+
+- autoflake, black, flake8, isort, mypy
 
 ### fastapi/uvicorn
 
@@ -17,11 +29,7 @@
 
 ### utils
 
-- psutil
-
-install reqs:
-
-- python3 -m pip install dbus-python uvicorn python-dotenv fastapi psutil
+- dbus-python uvicorn python-dotenv fastapi psutil
 
 ### speedtest reqs:
 
@@ -32,6 +40,7 @@ https://www.speedtest.net/apps/cli
 ### lldpd reqs:
 
 - sudo apt-get install lldpd
+
 - wlanpi user needs to be able to run `sudo lldpcli show neighbors -f json` without password, one option is to add the following line to the end of /etc/sudoers (sudo visudo):
 
 ```
@@ -44,12 +53,6 @@ wlanpi ALL=NOPASSWD:/usr/sbin/lldpcli
 - react.js? 
 
 ## backend local development
-
-- Install dependencies:
-
-```
-apt install pkg-config dbus build-essential libdbus-glib-1-dev speedtest-cli lldpd gcc python3-dev
-```
 
 - Create venv and install dependencies (subject to change).
 
@@ -69,7 +72,7 @@ cd {repo}/webstack/backend/app
 ./scripts/run.sh
 ```
 
-`run.sh` runs the following for development:
+`run.sh` runs something like the following for development only:
 
 ```
 uvicorn app.main:app --reload --env-file ../../.env 
@@ -107,7 +110,7 @@ TODO
 
 #### test coverage
 
-TODO
+use `tox` to automate tests and coverage stats
 
 ## frontend development
 
@@ -117,7 +120,11 @@ TODO
 
 ### backend
 
-TODO
+nginx for proxy pass and static files
+
+gunicorn for managing uvicorn processes
+
+uvicorn as the ASGI server 
 
 ### frontend
 
