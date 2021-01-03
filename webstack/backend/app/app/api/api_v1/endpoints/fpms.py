@@ -65,11 +65,13 @@ async def show_system_summary():
     try:
         temp_int = int(open("/sys/class/thermal/thermal_zone0/temp", "r").read())
     except:
-        temp_int = "unknown"
+        temp_int = None
+        temp = ""
 
-    if temp_int > 1000:
-        temp_int = temp_int / 1000
-    temp = f"{temp_int}C"
+    if temp_int:
+        if temp_int > 1000:
+            temp_int = temp_int / 1000
+        temp = f"{temp_int}C"
 
     result = {
         "ip": str(ip),
