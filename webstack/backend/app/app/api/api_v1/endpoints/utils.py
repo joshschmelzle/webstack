@@ -5,8 +5,8 @@ from socket import gethostname
 import psutil
 from dbus import Interface, SystemBus
 from dbus.exceptions import DBusException
-from fastapi.responses import JSONResponse
 from fastapi import APIRouter
+from fastapi.responses import JSONResponse
 
 router = APIRouter()
 
@@ -139,9 +139,8 @@ async def get_system_summary():
     summary["machine"] = uname.machine
     summary["processor"] = uname.processor
 
-    #return json.dumps(summary)
-    return JSONResponse(content=summary,status_code=200)
-    
+    # return json.dumps(summary)
+    return JSONResponse(content=summary, status_code=200)
 
 
 @router.get("/psutil_info")

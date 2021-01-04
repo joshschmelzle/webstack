@@ -1,13 +1,15 @@
+import logging
+
 import fastapi
 from starlette.requests import Request
 from starlette.templating import Jinja2Templates
-import logging
+
 templates = Jinja2Templates("app/templates")
 router = fastapi.APIRouter()
 from app.settings import endpoints
 
-
 log = logging.getLogger("uvicorn")
+
 
 @router.get("/", include_in_schema=False)
 async def index(request: Request):
