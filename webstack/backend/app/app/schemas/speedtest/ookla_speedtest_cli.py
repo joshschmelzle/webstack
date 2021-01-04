@@ -1,5 +1,4 @@
 import dataclasses
-
 from typing import Optional
 
 from pydantic import BaseModel
@@ -7,8 +6,8 @@ from pydantic import BaseModel
 
 @dataclasses.dataclass
 class Ping:
-    jitter: float 
-    latency: float 
+    jitter: float
+    latency: float
 
 
 @dataclasses.dataclass
@@ -16,6 +15,7 @@ class Download:
     bandwidth: int
     dl_bytes: int
     elapsed: int
+
 
 @dataclasses.dataclass
 class Upload:
@@ -53,10 +53,10 @@ class Result:
 class OoklaSpeedtest(BaseModel):
     resp_type: str
     timestamp: str
-    ping: Optional[Ping] 
-    download: Optional[Download] 
-    upload: Optional[Upload] 
+    ping: Optional[Ping]
+    download: Optional[Download]
+    upload: Optional[Upload]
     packetLoss: int
     interface: Optional[Interface]
-    server: Optional[Server] 
-    result: Optional[Result] 
+    server: Optional[Server]
+    result: Optional[Result]
