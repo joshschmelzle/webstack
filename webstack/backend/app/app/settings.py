@@ -1,1 +1,1 @@
-endpoints = []
+ENDPOINTS = []

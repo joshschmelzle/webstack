@@ -6,15 +6,22 @@ from starlette.templating import Jinja2Templates
 
 templates = Jinja2Templates("app/templates")
 router = fastapi.APIRouter()
-from app.settings import endpoints
+from app.settings import ENDPOINTS
 
 log = logging.getLogger("uvicorn")
 
 
 @router.get("/", include_in_schema=False)
 async def index(request: Request):
-    data = {"request": request, "endpoints": endpoints}
+    data = {"request": request}
     return templates.TemplateResponse("home/index.html", data)
+
+
+@router.get("/api/v1", include_in_schema=False)
+@router.get("/api", include_in_schema=False)
+async def index(request: Request):
+    data = {"request": request, "endpoints": ENDPOINTS}
+    return templates.TemplateResponse("home/api.html", data)
 
 
 @router.get("/favicon.ico", include_in_schema=False)
