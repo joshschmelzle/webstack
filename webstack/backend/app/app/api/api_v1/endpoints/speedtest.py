@@ -13,11 +13,11 @@ log = logging.getLogger("uvicorn")
 
 
 @router.get("/ookla", response_model=speedtest.OoklaSpeedtest)
-async def ookla_speedtest():
+async def run_ookla_speedtest():
     """
-    Run Ookla Speedtest CLI (`speedtest -f json`) and return results
+    Run Ookla Speedtest CLI (`speedtest -f json`) and return results.
 
-    Note that this will take approximately 30 seconds to return
+    Note this will take approximately 30 seconds to return.
     """
     resp = await ookla_speedtest_cli_service.get_speedtest_results()
 
