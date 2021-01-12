@@ -35,7 +35,7 @@ Example:
 """
 
 
-def is_tool(name: str):
+def is_tool(name: str) -> bool:
     """
     Check whether `name` is on PATH and marked as executable.
     """
@@ -117,20 +117,6 @@ Description:
     return test
 
 
-@router.get("/interfaces")
-async def diagnostics(interface: Optional[str] = None):
-    interfaces = await get_wifi_interfaces()
-    if interface:
-        if interface not in interfaces:
-            raise HTTPException(status_code=404, detail=f"{interface} not found")
-        return json.dumps(await test_wifi_interface(interface))
-    else:
-        combined = []
-        for interface in interfaces:
-            combined.append(await test_wifi_interface(interface))
-        return json.dumps(combined)
-
-
 @router.get("/")
 async def diagnostics():
     """
@@ -148,3 +134,17 @@ async def diagnostics():
     diag["airmon-ng"] = is_tool("airmon-ng")
 
     return json.dumps(diag)
+
+
+@router.get("/interfaces")
+async def diagnostics(interface: Optional[str] = None):
+    interfaces = await get_wifi_interfaces()
+    if interface:
+        if interface not in interfaces:
+            raise HTTPException(status_code=404, detail=f"{interface} not found")
+        return json.dumps(await test_wifi_interface(interface))
+    else:
+        combined = []
+        for interface in interfaces:
+            combined.append(await test_wifi_interface(interface))
+        return json.dumps(combined)

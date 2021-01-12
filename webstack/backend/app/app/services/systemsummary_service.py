@@ -48,7 +48,7 @@ async def get_system_summary_async() -> dict:
     if temp_int:
         if temp_int > 1000:
             temp_int = temp_int / 1000
-        temp = f"{temp_int}C"
+        temp = f"{temp_int:.2f}C"
 
     system_summary = {
         "ip": str(ip),
