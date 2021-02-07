@@ -8,10 +8,9 @@ async def run_cli_async(cmd: str) -> str:
 
     stdout, stderr = await proc.communicate()
 
-
     if proc.returncode == 0:
         if stdout:
             return stdout.decode()
 
     if stderr:
-        return f"[stderr]\n{stderr.decode()}"
+        raise f"[stderr]\n{stderr.decode()}"

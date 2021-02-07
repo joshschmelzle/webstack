@@ -1,41 +1,16 @@
 import fcntl
-import json
 import os
 import socket
 import struct
 from shutil import which
 from typing import List, Optional
 
-from fastapi import APIRouter, HTTPException
+from app.models.validation_error import ValidationError
 
-# from .helpers import run
-
-router = APIRouter()
-
-"""
-First ask for diagnostics is around capture/scan sensor function of the WLAN Pi.
-
-For example, assuming the user can reach the WLAN Pi-
-
-- Is the adapter plugged in? 
-- What USB port?
-- Does the adapter support monitor mode? 
-- Is the wifiexplorer-sensor running? 
-- Is tcpdump installed?
-- Does it need sudo to run?
-
-For diagnostics endpoints include a HTTP status code, if problem, return "false", and "error" with message.
-
-2xx: good
-4xx: bad - client’s fault (like providing a name for an non-existing interface)
-5xx: bad - server’s fault (like not having tcpdump properly installed)
-
-Example:
-{“success”: true, “response”: [{“name”: “wlan0"}, {“name”: “wlan1"}]}, { “success”: false, “error”: { “code”: 1001, “message”: “interface not found”}
-"""
+from .helpers import run_cli_async
 
 
-def is_tool(name: str) -> bool:
+async def is_tool(name: str) -> bool:
     """
     Check whether `name` is on PATH and marked as executable.
     """
@@ -70,12 +45,14 @@ async def get_ip_address(ifname):
 async def test_wifi_interface(interface: str) -> dict:
     test = {}
 
-    test["mac"] = (await run(f"cat /sys/class/net/{interface}/address")).strip()
+    test["mac"] = (
+        await run_cli_async(f"cat /sys/class/net/{interface}/address")
+    ).strip()
 
-    test["local_ip"] = await get_ip_address(interface)
+    # test["local_ip"] = await get_ip_address(interface)
 
     test["driver"] = (
-        (await run(f"readlink -f /sys/class/net/{interface}/device/driver"))
+        (await run_cli_async(f"readlink -f /sys/class/net/{interface}/device/driver"))
         .strip()
         .rsplit("/", 1)[1]
     )
@@ -95,10 +72,10 @@ Description:
 		"unknown", "notpresent", "down", "lowerlayerdown", "testing",
 		"dormant", "up".
     """
-    operstate = await run(f"cat /sys/class/net/{interface}/operstate")
+    operstate = await run_cli_async(f"cat /sys/class/net/{interface}/operstate")
     test["operstate"] = operstate.strip()
 
-    _type = await run(f"cat /sys/class/net/{interface}/type")
+    _type = await run_cli_async(f"cat /sys/class/net/{interface}/type")
 
     _type = int(_type)
     if _type == 1:
@@ -117,34 +94,34 @@ Description:
     return test
 
 
-@router.get("/")
-async def diagnostics():
+async def get_diagnostics():
     """
     Return diagnostic tests for probe
     """
     diag = {}
 
-    regdomain = await run("iw reg get")
+    regdomain = await run_cli_async("iw reg get")
 
     diag["regdomain"] = [line for line in regdomain.split("\n") if "country" in line]
-    diag["tcpdump"] = is_tool("tcpdump")
-    diag["iw"] = is_tool("iw")
-    diag["ip"] = is_tool("ip")
-    diag["ifconfig"] = is_tool("ifconfig")
-    diag["airmon-ng"] = is_tool("airmon-ng")
+    diag["tcpdump"] = await is_tool("tcpdump")
+    diag["iw"] = await is_tool("iw")
+    diag["ip"] = await is_tool("ip")
+    diag["ifconfig"] = await is_tool("ifconfig")
+    diag["airmon-ng"] = await is_tool("airmon-ng")
 
-    return json.dumps(diag)
+    return diag
 
 
-@router.get("/interfaces")
-async def diagnostics(interface: Optional[str] = None):
+async def get_interface_diagnostics(interface: Optional[str] = None):
     interfaces = await get_wifi_interfaces()
     if interface:
         if interface not in interfaces:
-            raise HTTPException(status_code=404, detail=f"{interface} not found")
-        return json.dumps(await test_wifi_interface(interface))
+            raise ValidationError(
+                status_code=400, error_msg=f"wlan interface {interface} not found"
+            )
+        return await test_wifi_interface(interface)
     else:
         combined = []
         for interface in interfaces:
             combined.append(await test_wifi_interface(interface))
-        return json.dumps(combined)
+        return combined

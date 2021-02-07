@@ -2,51 +2,55 @@
 
 ## backend requirements
 
-apt installs:
-
-first:
+apt install prep:
 
 ```
-sudo apt-get install gcc libpq-dev -y
-sudo apt-get install python3-dev python3-pip python3-venv python3-wheel -y
-pip3 install wheel
-```
-
-then:
-
-```
-sudo apt install pkg-config dbus build-essential git libdbus-glib-1-dev speedtest-cli lldpd
+sudo apt install gcc libpq-dev python3-dev python3-pip python3-venv python3-wheel pkg-config dbus build-essential git libdbus-glib-1-dev -y
 ```
 
 ### linting and formatting
 
-- autoflake, black, flake8, isort, mypy
+- autoflake
+- black
+- flake8
+- isort
+- mypy
 
 ### fastapi/uvicorn
 
-- uvicorn, python-dotenv, fastapi
+- uvicorn
+- python-dotenv
+- fastapi
 
 ### utils
 
-- dbus-python uvicorn python-dotenv fastapi psutil
+- dbus-python
+- uvicorn 
+- python-dotenv
+- fastapi
+- psutil
 
 ### ookla speedtest reqs:
 
 ```
-sudo apt-get install gnupg1 apt-transport-https dirmngr
+sudo apt install gnupg1 apt-transport-https dirmngr
 export INSTALL_KEY=379CE192D401AB61
 sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys $INSTALL_KEY
 echo "deb https://ookla.bintray.com/debian generic main" | sudo tee  /etc/apt/sources.list.d/speedtest.list
-sudo apt-get update
+sudo apt update
 # Other non-official binaries will conflict with Speedtest CLI
-# Example how to remove using apt-get
-# sudo apt-get remove speedtest-cli
-sudo apt-get install speedtest
+# Example how to remove using apt
+# sudo apt remove speedtest-cli
+sudo apt install speedtest
 ```
 
 ### lldpd reqs:
 
-- sudo apt-get install lldpd
+- install:
+
+```
+sudo apt install lldpd
+```
 
 - wlanpi user needs to be able to run `sudo lldpcli show neighbors -f json` without password, one option is to add the following line to the end of /etc/sudoers (sudo visudo):
 
@@ -61,16 +65,16 @@ wlanpi ALL=NOPASSWD:/usr/sbin/lldpcli
 
 ## backend local development
 
-- Create venv and install dependencies (subject to change).
+- Create virtualenv and install dependencies.
 
 ```
 cd {repo}/webstack/backend
-python3 -m venv venv
-source venv/bin/activate
-python3 -m pip install -r requirements.txt
+python3 -m venv env && source ./env/bin/activate
+python -m pip install -U pip wheel setuptools
+pip install -r requirements.txt
 ```
 
-- Future this may be installed via pipx (subject to change).
+- Note that in the future this may be installed via `pipx` or `dh-virtualenv`.
 
 - Start the webstack with uvicorn and `--reload` to reload when code changes are saved.
 

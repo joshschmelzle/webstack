@@ -1,10 +1,19 @@
+import json
 import socket
 
 from .helpers import run_cli_async
 
 
-async def get_system_summary_async() -> dict:
-    # figure out our IP
+async def get_system_summary() -> dict:
+    """
+    Returns device status information:
+
+    - IP address
+    - CPU utilization
+    - Memory usage
+    - Disk utilization
+    - Device temperature
+    """
     ip = ""
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     try:
@@ -57,4 +66,4 @@ async def get_system_summary_async() -> dict:
         "disk_util": str(disk),
         "temp": temp,
     }
-    return system_summary
+    return json.dumps(system_summary)

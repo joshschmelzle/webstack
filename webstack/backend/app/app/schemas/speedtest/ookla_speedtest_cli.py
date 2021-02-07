@@ -10,18 +10,18 @@ class OST_Ping(BaseModel):
 
 class OST_Download(BaseModel):
     bandwidth: int = Field(example=19780836)
-    dl_bytes: int = Field(example=226938080)
+    bytes: int = Field(example=226938080)
     elapsed: int = Field(example=11707)
 
 
 class OST_Upload(BaseModel):
     bandwidth: int = Field(example=1364478)
-    ul_bytes: int = Field(example=5226800)
+    bytes: int = Field(example=5226800)
     elapsed: int = Field(example=3813)
 
 
 class OST_Interface(BaseModel):
-    internal_ip: str = Field(example="192.168.1.21")
+    internalIp: str = Field(example="192.168.1.21")
     name: str = Field(example="eth0")
     macAddr: str = Field(example="02:01:78:00:00:00")
     isVpn: bool = Field(example=False)
@@ -29,7 +29,7 @@ class OST_Interface(BaseModel):
 
 
 class OST_Server(BaseModel):
-    server_id: int = Field(example=20398)
+    id: int = Field(example=20398)
     name: str = Field(example="Rando LLC")
     location: str = Field(example="NYC")
     country: str = Field(example="United States")
@@ -39,14 +39,14 @@ class OST_Server(BaseModel):
 
 
 class OST_Result(BaseModel):
-    result_id: str = Field(example="949308a2-e34e-2fe0-81f7-8d12cc02daab")
+    id: str = Field(example="949308a2-e34e-2fe0-81f7-8d12cc02daab")
     url: str = Field(
         example="https://www.speedtest.net/result/c/949308a2-e34e-2fe0-81f7-8d12cc02daab"
     )
 
 
 class OoklaSpeedtest(BaseModel):
-    resp_type: str = Field(example="result")
+    qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqtype: str = Field(example="result")
     timestamp: str = Field(example="2021-01-04T04:01:06Z")
     ping: Optional[OST_Ping]
     download: Optional[OST_Download]

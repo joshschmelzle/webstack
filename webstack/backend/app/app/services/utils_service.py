@@ -1,14 +1,10 @@
-import json
 import platform
 from socket import gethostname
 
-import psutil
 from dbus import Interface, SystemBus
 from dbus.exceptions import DBusException
-from fastapi import APIRouter
-from fastapi.responses import JSONResponse
 
-router = APIRouter()
+from app.models.validation_error import ValidationError
 
 
 def check_service_status(service):
@@ -40,7 +36,7 @@ def check_service_status(service):
     return service_running
 
 
-services = [
+allowed_services = [
     "profiler",
     "fpms",
     "iperf3",
@@ -51,17 +47,19 @@ services = [
 ]
 
 
-@router.get("/service")
 async def get_systemd_service_status(name: str):
     """
     Queries systemd via dbus to get status of a given service.
     """
     status = ""
     name = name.strip().lower()
-    if name in services:
+    if name in allowed_services:
         status = check_service_status(name)
         return {"name": name, "active": status}
-    return {"error": f"{name} access restricted or does not exist"}
+
+    raise ValidationError(
+        f"{name} access is restricted or does not exist", status_code=400
+    )
 
 
 # @router.get("/reachability")
@@ -91,9 +89,8 @@ async def get_systemd_service_status(name: str):
 #    return "TBD"
 
 
-@router.get("/hostname")
-async def read_wlanpi_hostname():
-    return gethostname()
+async def get_wlanpi_hostname():
+    return {"hostname": gethostname()}
 
 
 # @router.put("/hostname")
@@ -127,7 +124,6 @@ def get_wlanpi_version():
     return wlanpi_version
 
 
-@router.get("/system_info")
 async def get_system_summary():
     uname = platform.uname()
     summary = {}
@@ -138,25 +134,4 @@ async def get_system_summary():
     summary["version"] = uname.version
     summary["machine"] = uname.machine
     summary["processor"] = uname.processor
-
-    # return json.dumps(summary)
-    return JSONResponse(content=summary, status_code=200)
-
-
-@router.get("/psutil_info")
-async def get_psutil_info():
-    stats = {}
-    stats["cpu_count"] = psutil.cpu_count()
-    stats["cpu_freq"] = psutil.cpu_freq()
-    stats["cpu_percent"] = psutil.cpu_percent()
-    stats["cpu_stats"] = psutil.cpu_stats()
-    stats["getloadavg"] = psutil.getloadavg()
-    stats["sensors_battery"] = psutil.sensors_battery()
-    stats["sensors_fans"] = psutil.sensors_fans()
-    stats["sensors_temperatures"] = psutil.sensors_temperatures()
-    stats["disk_usage"] = psutil.disk_usage("/")
-    stats["boot_time"] = psutil.boot_time()
-    # stats['virtual_memory'] = psutil.virtual_memory()
-    # stats['swap_memory'] = psutil.swap_memory()
-    # stats['net_if_addrs'] = psutil.net_if_addrs()
-    return json.dumps(stats)
+    return summary
