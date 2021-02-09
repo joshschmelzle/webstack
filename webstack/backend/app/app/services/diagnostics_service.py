@@ -113,15 +113,16 @@ async def get_diagnostics():
 
 
 async def get_interface_diagnostics(interface: Optional[str] = None):
+    results = []
     interfaces = await get_wifi_interfaces()
     if interface:
         if interface not in interfaces:
             raise ValidationError(
                 status_code=400, error_msg=f"wlan interface {interface} not found"
             )
-        return await test_wifi_interface(interface)
+        results.append(await test_wifi_interface(interface))
+        return results
     else:
-        combined = []
         for interface in interfaces:
-            combined.append(await test_wifi_interface(interface))
-        return combined
+            results.append(await test_wifi_interface(interface))
+        return results
