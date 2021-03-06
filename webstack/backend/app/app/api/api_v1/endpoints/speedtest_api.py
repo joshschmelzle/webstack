@@ -3,10 +3,10 @@ import logging
 
 from fastapi import APIRouter, Response
 
-from app.models.validation_error import ValidationError
 from app.models.runcommand_error import RunCommandError
+from app.models.validation_error import ValidationError
 from app.schemas import speedtest
-from app.services import helpers, ookla_speedtest_cli_service
+from app.services import ookla_speedtest_cli_service
 
 router = APIRouter()
 
@@ -26,8 +26,6 @@ async def run_ookla_speedtest():
     except ValidationError as ve:
         return Response(content=ve.error_msg, status_code=ve.status_code)
     except RunCommandError as rce:
-        return Response(
-            content=rce.error_msg, status_code=rce.status_code
-        )
+        return Response(content=rce.error_msg, status_code=rce.status_code)
     except Exception as ex:
         return Response(content=str(ex), status_code=500)
