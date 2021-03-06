@@ -31,14 +31,19 @@ def check_service_status(service):
         )
         if service_load_state == "loaded" and service_active_state == "active":
             service_running = True
-    except DBusException:
-        pass
+    except DBusException as de:
+        if de._dbus_error_name == "org.freedesktop.systemd1.NoSuchUnit":
+            raise ValidationError(
+                f"{service} service does not exist on host", status_code=400
+            )
     return service_running
 
 
 allowed_services = [
     "profiler",
+    "wlanpi-profiler",
     "fpms",
+    "wlanpi-fpms",
     "iperf3",
     "ufw",
     "tftpd-hpa",
