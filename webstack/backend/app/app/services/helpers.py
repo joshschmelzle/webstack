@@ -1,5 +1,7 @@
 import asyncio
 
+from app.models.runcommand_error import RunCommandError
+
 
 async def run_cli_async(cmd: str) -> str:
     proc = await asyncio.create_subprocess_shell(
@@ -13,4 +15,6 @@ async def run_cli_async(cmd: str) -> str:
             return stdout.decode()
 
     if stderr:
-        raise f"[stderr]\n{stderr.decode()}"
+        raise RunCommandError(
+            status_code=424, error_msg=f"'{cmd}' gave stderr response"
+        )
