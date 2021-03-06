@@ -46,7 +46,7 @@ class OST_Result(BaseModel):
 
 
 class OoklaSpeedtest(BaseModel):
-    qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqtype: str = Field(example="result")
+    type: str = Field(example="result")
     timestamp: str = Field(example="2021-01-04T04:01:06Z")
     ping: Optional[OST_Ping]
     download: Optional[OST_Download]
