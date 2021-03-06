@@ -21,6 +21,6 @@ async def get_public_ip():
     async with httpx.AsyncClient() as client:
         resp: Response = await client.get(url)
         if resp.status_code != 200:
-            raise ValidationError(resp.text, status_code=resp.status_code)
+            raise ValidationError(content=resp.text, status_code=resp.status_code)
 
     return resp.json()
