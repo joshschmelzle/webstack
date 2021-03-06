@@ -12,7 +12,7 @@ async def get_neighbor_results():
     ```
     """
 
-    return await run_cli_async("sudo lldpcli show neighbors -f json")
+    return await run_cli_async("/usr/sbin/lldpcli show neighbors -f json")
 
 
 async def get_public_ip():
