@@ -52,7 +52,7 @@ sudo apt install speedtest
 sudo apt install lldpd
 ```
 
-- wlanpi user needs to be able to run `sudo lldpcli show neighbors -f json` without password, one option is to add the following line to the end of /etc/sudoers (sudo visudo):
+- wlanpi user needs to be able to run `/usr/sbin/lldpcli show neighbors -f json` without password, one option is to add the following line to the end of /etc/sudoers (sudo visudo):
 
 ```
 wlanpi ALL=NOPASSWD:/usr/sbin/lldpcli
@@ -80,10 +80,10 @@ pip install -r requirements.txt
 
 ```
 cd {repo}/webstack/backend/app
-./scripts/run.sh
+./scripts/run.sh app
 ```
 
-`run.sh` runs something like the following for development only:
+`run.sh app` runs something like the following for development only:
 
 ```
 uvicorn app.main:app --reload --env-file ../../.env 
@@ -106,10 +106,10 @@ Alternative automatic documentation with ReDoc (from the OpenAPI backend): http:
 before committing changes:
 
 - for consistent styling please lint using lint.sh:
-- `(venv) [~/webstack/webstack/backend/app]: ./scripts/lint.sh`
+- `(venv) [~/webstack/webstack/backend/app]: ./scripts/lint.sh app`
 
 - to apply automatic formatting changes use format.sh:
-- `(venv) [~/webstack/webstack/backend/app]: ./scripts/format.sh`
+- `(venv) [~/webstack/webstack/backend/app]: ./scripts/format.sh app`
 
 ### general workflow
 
