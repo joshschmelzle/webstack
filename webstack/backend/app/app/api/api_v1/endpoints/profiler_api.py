@@ -1,18 +1,39 @@
-from fastapi import APIRouter
+import logging
+
+from fastapi import APIRouter, Response
+
+from app.models.validation_error import ValidationError
+from app.schemas import profiler
+from app.services import profiler_service
 
 router = APIRouter()
 
-
-# @router.get("/")
-# def read_profiles():
-#    return "profiles"
+log = logging.getLogger("uvicorn")
 
 
-# @router.put("/{mac}")
-# def add_item():
-#    return "TBD"
+@router.get("/{mac}", response_model=profiler.Profile)
+async def show_profile(mac: str):
+    """
+    Retrieves profile for a particular MAC
+    """
+    try:
+        resp = await profiler_service.get_profile(mac)
+        return resp
+    except ValidationError as ve:
+        return Response(content=ve.error_msg, status_code=ve.status_code)
+    except Exception as ex:
+        return Response(content=str(ex), status_code=500)
 
 
-# @router.get("/{mac}")
-# def read_item():
-#    return "TBD"
+@router.get("/", response_model=profiler.Profiles)
+async def read_profiles():
+    """
+    Retrieves all profiles on host
+    """
+    try:
+        resp = await profiler_service.get_profiles()
+        return {"profiles": resp}
+    except ValidationError as ve:
+        return Response(content=ve.error_msg, status_code=ve.status_code)
+    except Exception as ex:
+        return Response(content=str(ex), status_code=500)
